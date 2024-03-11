@@ -1,12 +1,13 @@
+import javapong.main.GamePanel;
 import java.awt.*;
 import javax.swing.*;
-
 public class GameFrame extends JFrame{
 
-    GamePanel panel;
+   
 
     GameFrame(){
-        panel = new GamePanel();
+        // creat an object by calling the static method 
+       GamePanel panel = GamePanel.getInstance(); 
         this.add(panel);
         this.setTitle("Pong by Borrozzino, Macrev & Igor");
         this.setResizable(false);
