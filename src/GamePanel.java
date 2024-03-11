@@ -1,3 +1,5 @@
+import javapong.main.Paddle;
+import javapong.main.Score;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -11,6 +13,8 @@ public class GamePanel extends JPanel implements Runnable{
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
+    // static var of Class type to track objects created; 
+    private static GamePanel instence = null;
     Thread gameThread;
     Image image;
     Graphics graphics;
@@ -23,7 +27,8 @@ public class GamePanel extends JPanel implements Runnable{
     boolean p2cpu = false;
     CPU cpu = new CPU();
 
-    GamePanel(){
+    // Private constructor
+    private GamePanel(){
         newPaddles();
         newBall();
         score = new Score(GAME_WIDTH,GAME_HEIGHT);
@@ -33,6 +38,14 @@ public class GamePanel extends JPanel implements Runnable{
 
         gameThread = new Thread(this);
         gameThread.start();
+    }
+    // static method returns an object of class type 
+    public static GamePanel getInstance() {
+        // if statment to check if an object already initianted 
+        if (instence == null) {
+            instence = new GamePanel();
+        }
+        return instence;
     }
 
     public void newBall() {
@@ -145,6 +158,7 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
     }
+    
     public class AL extends KeyAdapter{
         public void keyPressed(KeyEvent e) {
             if (!p1cpu) paddle1.keyPressed(e);
