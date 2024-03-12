@@ -1,5 +1,3 @@
-import javapong.main.Paddle;
-import javapong.main.Score;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -22,7 +20,7 @@ public class GamePanel extends JPanel implements Runnable{
     Paddle paddle1;
     Paddle paddle2;
     Ball ball;
-    Score score;
+    private Score score;
     boolean p1cpu = false;
     boolean p2cpu = false;
     CPU cpu = new CPU();
@@ -31,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable{
     private GamePanel(){
         newPaddles();
         newBall();
-        score = new Score(GAME_WIDTH,GAME_HEIGHT);
+        score = Score.getInstance(GAME_WIDTH, GAME_HEIGHT);
         this.setFocusable(true);
         this.addKeyListener(new AL());
         this.setPreferredSize(SCREEN_SIZE);
@@ -119,16 +117,16 @@ public class GamePanel extends JPanel implements Runnable{
             paddle2.y = GAME_HEIGHT-PADDLE_HEIGHT;
         //give a player 1 point and creates new paddles & ball
         if(ball.x <=0) {
-            score.player2++;
+            score.incrementPlayer2();
             newPaddles();
             newBall();
-            System.out.println("Player 2: "+score.player2);
+            System.out.println("Player 2: "+score.getPlayer2());
         }
         if(ball.x >= GAME_WIDTH-BALL_DIAMETER) {
-            score.player1++;
+            score.incrementPlayer1();
             newPaddles();
             newBall();
-            System.out.println("Player 1: "+score.player1);
+            System.out.println("Player 1: "+score.getPlayer1());
         }
     }
     public void run() {
@@ -139,7 +137,7 @@ public class GamePanel extends JPanel implements Runnable{
         double delta = 0;
         int maxRounds = 5; // Set the maximum number of rounds
     
-        while (score.player1 < maxRounds && score.player2 < maxRounds) {
+        while (score.getPlayer1() < maxRounds && score.getPlayer2() < maxRounds) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -150,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable{
                 delta--;
     
                 // Additional check to stop the game after reaching the maximum rounds
-                if (score.player1 >= maxRounds || score.player2 >= maxRounds) {
+                if (score.getPlayer1() >= maxRounds ||score.getPlayer2() >= maxRounds) {
                     // You can add cleanup or display a message indicating the end of the game.
                     System.out.println("Game Over!");
                     break; // Exit the loop and stop the game
@@ -172,3 +170,4 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
 }
+
