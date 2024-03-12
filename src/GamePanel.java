@@ -3,16 +3,15 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-public class GamePanel extends JPanel implements Runnable{
+public class GamePanel extends JPanel implements Runnable {
 
     static final int GAME_WIDTH = 1000;
-    static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
-    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
+    static final int GAME_HEIGHT = (int) (GAME_WIDTH * (0.5555));
+    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
-    // static var of Class type to track objects created; 
-    private static GamePanel instence = null;
+   private static GamePanel instance = null;
     Thread gameThread;
     Image image;
     Graphics graphics;
@@ -24,9 +23,11 @@ public class GamePanel extends JPanel implements Runnable{
     boolean p1cpu = false;
     boolean p2cpu = false;
     CPU cpu = new CPU();
+    private Color paddle1Color; // Color of paddle 1
+    private Color paddle2Color; // Color of paddle 2
 
     // Private constructor
-    private GamePanel(){
+    private GamePanel() {
         newPaddles();
         newBall();
         score = Score.getInstance(GAME_WIDTH, GAME_HEIGHT);
@@ -36,42 +37,61 @@ public class GamePanel extends JPanel implements Runnable{
 
         gameThread = new Thread(this);
         gameThread.start();
+
+        paddle1Color = Color.white; // Default color for paddle 1
+        paddle2Color = Color.white; // Default color for paddle 2
+      
     }
-    // static method returns an object of class type 
-    public static GamePanel getInstance() {
-        // if statment to check if an object already initianted 
-        if (instence == null) {
-            instence = new GamePanel();
-        }
-        return instence;
+
+    // Factory method with color selection
+    public static GamePanel getInstance(Color paddle1Color, Color paddle2Color) {
+        GamePanel instance = new GamePanel();
+        instance.setPaddleColors(paddle1Color, paddle2Color);
+        return instance;
+    }
+
+    // Method to set the paddle colors
+    public void setPaddleColors(Color paddle1Color, Color paddle2Color) {
+        this.paddle1Color = paddle1Color;
+        this.paddle2Color = paddle2Color;
     }
 
     public void newBall() {
         random = new Random();
-        ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
+        ball = new Ball((GAME_WIDTH / 2) - (BALL_DIAMETER / 2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER),
+                BALL_DIAMETER, BALL_DIAMETER);
     }
+
     public void newPaddles() {
-        paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
-        paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
+        paddle1 = new Paddle(0, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 1);
+        paddle2 = new Paddle(GAME_WIDTH - PADDLE_WIDTH, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH,
+                PADDLE_HEIGHT, 2);
     }
+
     public void paint(Graphics g) {
-        image = createImage(getWidth(),getHeight());
+        image = createImage(getWidth(), getHeight());
         graphics = image.getGraphics();
         draw(graphics);
-        g.drawImage(image,0,0,this);
+        g.drawImage(image, 0, 0, this);
     }
+
     public void draw(Graphics g) {
+        paddle1.setColor(paddle1Color);
+        paddle2.setColor(paddle2Color);
+
         paddle1.draw(g);
         paddle2.draw(g);
         ball.draw(g);
         score.draw(g);
         cpu.draw(g, p1cpu, p2cpu);
-        Toolkit.getDefaultToolkit().sync(); // I forgot to add this line of code in the video, it helps with the animation
-
+        Toolkit.getDefaultToolkit().sync();
     }
+
     public void move() {
-        if (p1cpu) cpu.control(paddle1, ball);
-        if (p2cpu) cpu.control(paddle2, ball);
+        if (p1cpu)
+            cpu.control(paddle1, ball);
+        if (p2cpu)
+            cpu.control(paddle2, ball);
         paddle1.move();
         paddle2.move();
         ball.move();
