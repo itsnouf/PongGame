@@ -1,13 +1,13 @@
-import javapong.main.GamePanel;
-import java.awt.*;
-import javax.swing.*;
-public class GameFrame extends JFrame{
+import java.awt.Color;
+import javax.swing.JFrame;
 
-   
+public class GameFrame extends JFrame {
 
-    GameFrame(){
-        // creat an object by calling the static method 
-       GamePanel panel = GamePanel.getInstance(); 
+    private static final long serialVersionUID = 1L;
+
+    public GameFrame() {
+        GamePanel panel = GamePanel.getInstance(Color.pink, Color.white);
+
         this.add(panel);
         this.setTitle("Pong by Borrozzino, Macrev & Igor");
         this.setResizable(false);
