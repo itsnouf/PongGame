@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+ 
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -32,8 +33,9 @@ public class GamePanel extends JPanel implements Runnable {
         newBall();
         score = Score.getInstance(GAME_WIDTH, GAME_HEIGHT);
         this.setFocusable(true);
-        this.addKeyListener(new AL());
+        this.addKeyListener(new AL()); // Add AL as the key listener
         this.setPreferredSize(SCREEN_SIZE);
+        
 
         gameThread = new Thread(this);
         gameThread.start();
@@ -55,12 +57,37 @@ public class GamePanel extends JPanel implements Runnable {
         this.paddle1Color = paddle1Color;
         this.paddle2Color = paddle2Color;
     }
-
     public void newBall() {
         random = new Random();
-        ball = new Ball((GAME_WIDTH / 2) - (BALL_DIAMETER / 2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER),
-                BALL_DIAMETER, BALL_DIAMETER);
+    
+        int ballX = (GAME_WIDTH / 2) - (BALL_DIAMETER / 2);
+        int ballY = random.nextInt(GAME_HEIGHT - BALL_DIAMETER);
+    
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Enter the ball speed (1 for slow, 2 for medium, 3 for fast):");
+            int speedChoice = scanner.nextInt();
+    
+            Ball ball;
+            if (speedChoice == 1) {
+                ball = new SlowBall(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
+            } else if (speedChoice == 2) {
+                ball = new MediumBall(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
+            } else if (speedChoice == 3) {
+                ball = new FastBall(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
+            } else {
+                System.out.println("Invalid speed choice. Using medium speed as default.");
+                ball = new MediumBall(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
+            }
+    
+            this.ball = ball;
+        } catch (NoSuchElementException e) {
+            // Handle the exception if input is missing
+            System.out.println("Error reading input. Using medium speed as default.");
+            ball = new MediumBall(ballX, ballY, BALL_DIAMETER, BALL_DIAMETER);
+            this.ball = ball;
+        }
     }
+    
 
     public void newPaddles() {
         paddle1 = new Paddle(0, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 1);
@@ -150,14 +177,15 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void run() {
-        //game loop
+        // Game loop
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         int maxRounds = 5; // Set the maximum number of rounds
+        int roundsPlayed = 0; // Track the number of rounds played
     
-        while (score.getPlayer1() < maxRounds && score.getPlayer2() < maxRounds) {
+        while (true) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -167,27 +195,47 @@ public class GamePanel extends JPanel implements Runnable {
                 repaint();
                 delta--;
     
-                // Additional check to stop the game after reaching the maximum rounds
-                if (score.getPlayer1() >= maxRounds ||score.getPlayer2() >= maxRounds) {
-                    // You can add cleanup or display a message indicating the end of the game.
-                    System.out.println("Game Over!");
-                    break; // Exit the loop and stop the game
+                // Check if a player has won the current round
+                if (score.getPlayer1() >= maxRounds || score.getPlayer2() >= maxRounds) {
+                    roundsPlayed++;
+                    if (roundsPlayed >= maxRounds) {
+                        // The game is over after completing the maximum rounds
+                        // You can add cleanup or display a message indicating the end of the game.
+                        System.out.println("Game Over!");
+                        break;
+                    } else {
+                        // Start a new round
+                        newPaddles();
+                        newBall();
+                        System.out.println("Starting Round " + (roundsPlayed + 1));
+                    }
                 }
             }
         }
     }
     
-    public class AL extends KeyAdapter{
+    public class AL extends KeyAdapter {
         public void keyPressed(KeyEvent e) {
-            if (!p1cpu) paddle1.keyPressed(e);
-            if (!p2cpu) paddle2.keyPressed(e);
-            if (e.getKeyChar() == 'o') p1cpu = !p1cpu;
-            if (e.getKeyChar() == 'p') p2cpu = !p2cpu;
+            if (!p1cpu) {
+                paddle1.keyPressed(e);
+            }
+            if (!p2cpu) {
+                paddle2.keyPressed(e);
+            }
+            if (e.getKeyChar() == 'o') {
+                p1cpu = !p1cpu;
+            }
+            if (e.getKeyChar() == 'p') {
+                p2cpu = !p2cpu;
+            }
         }
+    
         public void keyReleased(KeyEvent e) {
             paddle1.keyReleased(e);
             paddle2.keyReleased(e);
         }
     }
+    
+    
 }
 
