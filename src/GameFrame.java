@@ -3,10 +3,12 @@ import javax.swing.JFrame;
 
 public class GameFrame extends JFrame {
 
-    private static final long serialVersionUID = 1L;
+     private static final long serialVersionUID = 1L;
 
     public GameFrame() {
         GamePanel panel = GamePanel.getInstance(Color.pink, Color.white);
+        panel.setFocusable(true); // Allow panel to get focus
+        panel.requestFocusInWindow(); // Set focus to the GamePanel
 
         this.add(panel);
         this.setTitle("Pong by Borrozzino, Macrev & Igor");
