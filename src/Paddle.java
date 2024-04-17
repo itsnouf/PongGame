@@ -21,27 +21,27 @@ public class Paddle extends Rectangle{
     public void keyPressed(KeyEvent e) {
         switch(id) {
             case 1:
-                if(e.getKeyCode()==KeyEvent.VK_W) setYDirection(-speed);
-                if(e.getKeyCode()==KeyEvent.VK_S) setYDirection(speed);
+                if(e.getKeyCode()==KeyEvent.VK_W) yVelocity = -speed;
+                if(e.getKeyCode()==KeyEvent.VK_S) yVelocity = speed;
                 break;
             case 2:
-                if(e.getKeyCode()==KeyEvent.VK_UP)   setYDirection(-speed);
-                if(e.getKeyCode()==KeyEvent.VK_DOWN) setYDirection(speed);
+                if(e.getKeyCode()==KeyEvent.VK_UP) yVelocity = -speed;
+                if(e.getKeyCode()==KeyEvent.VK_DOWN) yVelocity = speed;
                 break;
         }
     }
+    
     public void keyReleased(KeyEvent e) {
         switch(id) {
             case 1:
-                if(e.getKeyCode()==KeyEvent.VK_W) setYDirection(0);
-                if(e.getKeyCode()==KeyEvent.VK_S) setYDirection(0);
+                if(e.getKeyCode()==KeyEvent.VK_W || e.getKeyCode()==KeyEvent.VK_S) yVelocity = 0;
                 break;
             case 2:
-                if(e.getKeyCode()==KeyEvent.VK_UP)   setYDirection(0);
-                if(e.getKeyCode()==KeyEvent.VK_DOWN) setYDirection(0);
+                if(e.getKeyCode()==KeyEvent.VK_UP || e.getKeyCode()==KeyEvent.VK_DOWN) yVelocity = 0;
                 break;
         }
     }
+    
     public void setYDirection(int yDirection) {
         yVelocity = yDirection;
     }
