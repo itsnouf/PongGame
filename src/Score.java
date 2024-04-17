@@ -44,4 +44,7 @@ public class Score extends Rectangle{
     public void incrementPlayer2() {
         player2++;
     }
+
+    
 }
+
