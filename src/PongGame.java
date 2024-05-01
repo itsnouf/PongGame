@@ -1,15 +1,19 @@
+ import java.io.IOException;
 import java.util.Scanner;
 
 public class PongGame {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         @SuppressWarnings("unused")
+        Adapter adapter = new Adapter(new LoginSignup());
+        adapter.ShowGUI();
         GameFrame frame = new GameFrame();
-        //Scanner scanner = new Scanner(System.in);
+       
+        
         Scanner scanner = new Scanner(System.in);
-System.out.println("Enter the ball speed (1 for slow, 2 for medium, 3 for fast):");
-int speedChoice = scanner.nextInt();
-scanner.close(); // Close the Scanner object
+        System.out.println("Enter the ball speed (1 for slow, 2 for medium, 3 for fast):");
+        int speedChoice = scanner.nextInt();
+        scanner.close(); // Close the Scanner object
 
 
 
@@ -39,3 +43,4 @@ scanner.close(); // Close the Scanner object
 
     
 }}
+
