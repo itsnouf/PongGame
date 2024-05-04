@@ -2,7 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +17,7 @@ interface Authenticator {
 }
 
 class LoginSignup implements Authenticator {
+
     private Map<String, String> userMap;
     private static final String DATA_FILE = "userdata.txt";
 
@@ -54,7 +60,7 @@ class LoginSignup implements Authenticator {
         }
     }
 
-   public void saveUserData() throws IOException {
+    public void saveUserData() throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
             for (Map.Entry<String, String> entry : userMap.entrySet()) {
                 writer.write(entry.getKey() + ":" + entry.getValue());
@@ -63,15 +69,7 @@ class LoginSignup implements Authenticator {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
-    }
-
-   public static void createAndShowGUI() {
+    static void createAndShowGUI() {
         JFrame frame = new JFrame("Login and Sign Up");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 200); // Set the size of the window
@@ -95,13 +93,15 @@ class LoginSignup implements Authenticator {
         panel.add(signupButton);
         panel.add(statusLabel);
 
+        Authenticator authenticator = new LoginSignupProxy();
+
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
                 try {
-                    if (authenticateUser(username, password)) {
+                    if (authenticator.authenticate(username, password)) {
                         statusLabel.setText("Login successful!");
                     } else {
                         statusLabel.setText("Invalid username or password.");
@@ -121,7 +121,7 @@ class LoginSignup implements Authenticator {
                 String password = new String(passwordField.getPassword());
 
                 try {
-                    if (createNewUser(username, password)) {
+                    if (authenticator.createUser(username, password)) {
                         statusLabel.setText("User created successfully!");
                     } else {
                         statusLabel.setText("Username already exists.");
@@ -139,18 +139,38 @@ class LoginSignup implements Authenticator {
         frame.setVisible(true);
     }
 
-   public static boolean authenticateUser(String username, String password) throws IOException {
-        LoginSignup loginSignup = new LoginSignup();
-        return loginSignup.authenticate(username, password);
-    }
-
-    public static boolean createNewUser(String username, String password) throws IOException {
-        LoginSignup loginSignup = new LoginSignup();
-        return loginSignup.createUser(username, password);
-    }
-
-    public static void clearFields(JTextField usernameField, JPasswordField passwordField) {
+    private static void clearFields(JTextField usernameField, JPasswordField passwordField) {
         usernameField.setText("");
         passwordField.setText("");
     }
 }
+
+class LoginSignupProxy implements Authenticator {
+    private final LoginSignup loginSignup;
+
+     LoginSignupProxy() {
+        try {
+            loginSignup = new LoginSignup();
+        } catch (IOException e) {
+            throw new RuntimeException("Error initializing LoginSignupProxy", e);
+        }
+    }
+    @Override
+    public boolean authenticate(String username, String password) throws IOException {
+        return loginSignup.authenticate(username, password);
+    }
+
+    @Override
+    public boolean createUser(String username, String password) throws IOException {
+        return loginSignup.createUser(username, password);
+    }
+    public void loadUserData() throws IOException {
+        loginSignup.loadUserData();
+    }
+
+    public void saveUserData() throws IOException {
+        loginSignup.saveUserData();
+    }
+}
+
+
