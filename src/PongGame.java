@@ -1,11 +1,11 @@
- import java.io.IOException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class PongGame {
 
     public static void main(String[] args) throws IOException {
         @SuppressWarnings("unused")
-        Adapter adapter = new Adapter(new LoginSignup());
+        Adapter adapter = new Adapter(new LoginSignupProxy());
         adapter.ShowGUI();
         GameFrame frame = new GameFrame();
        
