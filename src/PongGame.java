@@ -5,7 +5,8 @@ public class PongGame {
 
     public static void main(String[] args) throws IOException {
         @SuppressWarnings("unused")
-        Adapter adapter = new Adapter(new LoginSignupProxy());
+        LoginSignupProxy loginSignupProxy=new LoginSignupProxy();
+        Adapter adapter = new Adapter(loginSignupProxy);
         adapter.ShowGUI();
         GameFrame frame = new GameFrame();
        
@@ -41,6 +42,8 @@ public class PongGame {
                 break;
         }
 
+    
+}}
     
 }}
 
